@@ -75,7 +75,7 @@ const displayMovements = function (movements, sort = false) {
       i + 1
     } ${type}</div>
           <div class="movements__date">3 days ago</div>
-          <div class="movements__value">${mov}€</div>
+          <div class="movements__value">${mov.toFixed(2)}€</div>
         </div>
         `;
     containerMovements.insertAdjacentHTML('afterbegin', html); //dodajemo kod koji smo stvorili sa html varijablom
