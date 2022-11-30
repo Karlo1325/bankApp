@@ -206,7 +206,7 @@ btnLoan.addEventListener('click', function (e) {
     setTimeout(() => {
       currentAccount.movements.push(amount);
       updateUI(currentAccount);
-    }, 5000);
+    }, 2000);
 
     // clear input field
     inputLoanAmount.value = '';
