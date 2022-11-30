@@ -84,19 +84,19 @@ const displayMovements = function (movements, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
 };
 
 const calcDisplaySummary = function (accs) {
   const income = accs.movements
     .filter(inc => inc > 0)
     .reduce((acc, val) => acc + val, 0);
-  labelSumIn.textContent = `${income}€`;
+  labelSumIn.textContent = `${income.toFixed(2)}€`;
 
   const out = accs.movements
     .filter(out => out < 0)
     .reduce((acc, val) => acc + val, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
 
   const interest = accs.movements
     .filter(inc => inc > 0)
@@ -106,7 +106,7 @@ const calcDisplaySummary = function (accs) {
       return deposit >= 1;
     })
     .reduce((acc, sum) => acc + sum, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 };
 
 const updateUI = function (acc) {
