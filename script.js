@@ -83,8 +83,8 @@ const account4 = {
     "2022-11-26T23:36:17.929Z",
     "2022-11-30T10:51:36.790Z",
   ],
-  currency: "EUR",
-  locale: "en-GB",
+  currency: "JPY",
+  locale: "ja-JP",
 };
 
 const accounts = [account1, account2, account3, account4];
