@@ -42,13 +42,13 @@ const account2 = {
     "2022-11-26T23:36:17.929Z",
     "2022-11-30T10:51:36.790Z",
   ],
-  currency: "EUR",
-  locale: "en-GB",
+  currency: "USD",
+  locale: "en-US",
 };
 
 const account3 = {
   owner: "Valentina Cicko",
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  movements: [200, -200, 340, -300, -20, 50, 400, -460, 60600],
   interestRate: 0.7,
   pin: 3333,
 
@@ -61,8 +61,9 @@ const account3 = {
     "2022-11-24T17:01:17.194Z",
     "2022-11-26T23:36:17.929Z",
     "2022-11-30T10:51:36.790Z",
+    "2022-12-01T10:51:36.790Z",
   ],
-  currency: "EUR",
+  currency: "GBP",
   locale: "en-GB",
 };
 
@@ -129,6 +130,13 @@ const options = {
   weekday: "long",
 };
 
+// Currency function
+const formatCur = (val, locale, currency) =>
+  new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(val);
+
 const formatMovementDate = function (date) {
   const calcDaysPassed = (date1, date2) =>
     Math.abs(Math.round((date2 - date1) / (1000 * 60 * 60 * 24)));
@@ -174,7 +182,11 @@ const displayMovements = function (acc, sort = false) {
       i + 1
     } ${type}</div>
           <div class="movements__date">${displayDate}</div>
-          <div class="movements__value">${mov.toFixed(2)}€</div>
+          <div class="movements__value">${formatCur(
+            mov,
+            acc.locale,
+            acc.currency
+          )}</div>
         </div>
         `;
     containerMovements.insertAdjacentHTML("afterbegin", html); //dodajemo kod koji smo stvorili sa html varijablom
@@ -183,29 +195,32 @@ const displayMovements = function (acc, sort = false) {
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 
-const calcDisplaySummary = function (accs) {
-  const income = accs.movements
+const calcDisplaySummary = function (acc) {
+  const income = acc.movements
     .filter((inc) => inc > 0)
     .reduce((acc, val) => acc + val, 0);
-  labelSumIn.textContent = `${income.toFixed(2)}€`;
+  labelSumIn.textContent = formatCur(income, acc.locale, acc.currency);
 
-  const out = accs.movements
+  const out = acc.movements
     .filter((out) => out < 0)
     .reduce((acc, val) => acc + val, 0);
-  labelSumOut.textContent = `${Math.abs(out.toFixed(2))}€`;
+  labelSumOut.textContent = formatCur(out, acc.locale, acc.currency).replace(
+    "-",
+    ""
+  );
 
-  const interest = accs.movements
+  const interest = acc.movements
     .filter((inc) => inc > 0)
-    .map((deposit) => (deposit * accs.interestRate) / 100)
+    .map((deposit) => (deposit * acc.interestRate) / 100)
     .filter((deposit, i, arr) => {
       console.log(arr);
       return deposit >= 1;
     })
     .reduce((acc, sum) => acc + sum, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 const updateUI = function (acc) {
