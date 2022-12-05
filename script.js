@@ -120,6 +120,30 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 // Functions
 
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0); // converting seconds into min
+    const sec = String(time % 60).padStart(2, 0);
+
+    // in each call, print the remaining time to the UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // when the timer expires, stop timer and log out user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+    // decrease 1s
+    time--;
+  };
+  let time = 90;
+
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
 // Current date display parameters
 const options = {
   hour: "numeric",
@@ -235,11 +259,14 @@ const updateUI = function (acc) {
 };
 
 // Event handler
-let currentAccount;
+let currentAccount, timer;
 
 //Login
 btnLogin.addEventListener("click", function (e) {
   e.preventDefault(); // prevent form from submiting
+  
+  if (timer) clearInterval(timer); // stoping multiple timers if there r multiple logins
+  timer = startLogOutTimer();
 
   currentAccount = accounts.find(
     (acc) => acc.username === inputLoginUsername.value
@@ -263,9 +290,20 @@ btnLogin.addEventListener("click", function (e) {
     containerApp.style.opacity = 100;
 
     // Display date
-    labelDate.textContent = new Intl.DateTimeFormat("en-GB", options).format(
-      now
-    );
+    setInterval(() => {
+      const timeNow = new Date();
+      const displayTime = new Intl.DateTimeFormat(currentAccount.locale, {
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        weekday: 'long',
+      }).format(timeNow);
+
+      labelDate.textContent = displayTime;
+    }, 1000);
 
     updateUI(currentAccount);
   } else if (
@@ -315,6 +353,11 @@ btnTransfer.addEventListener("click", function (e) {
   } else if (currentAccount.balance < amount) {
     alert("Balance too low");
   }
+  
+    // Reset timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
+  
 });
 
 // Request a lona
@@ -333,6 +376,10 @@ btnLoan.addEventListener("click", function (e) {
       currentAccount.movementsDates.push(now.toISOString());
       updateUI(currentAccount);
     }, 1000);
+    
+      // Reset timer
+  clearInterval(timer);
+  timer = startLogOutTimer();
 
     // clear input field
     inputLoanAmount.value = "";
